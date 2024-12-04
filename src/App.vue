@@ -1,17 +1,15 @@
-<script setup>
-import Login from './components/Login.vue'
-import Orders from './components/Orders.vue'
-import OrderDetail from './components/OrderDetail.vue'
-</script>
-
-
 <template>
   <div id="app">
-    <Login />
+    <router-view />
   </div>
 </template>
 
+<script>
+export default {
+  name: 'App'
+};
+</script>
 
 <style scoped>
-
+/* Algemene stijlen */
 </style>

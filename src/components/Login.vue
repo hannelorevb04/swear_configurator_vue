@@ -1,3 +1,28 @@
+<script setup>
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+// Declareren van de variabelen voor email, wachtwoord, foutmelding en de router
+const email = ref('');
+const password = ref('');
+const error = ref('');
+const router = useRouter(); // Gebruik useRouter om de router binnen te halen
+
+// Inlogfunctie die controleert of email en wachtwoord juist zijn
+function login() {
+  if (email.value === 'admin@admin.com' && password.value === 'Admin') {
+    // Sla een "token" op om aan te geven dat de gebruiker is ingelogd
+    localStorage.setItem('token', 'admin-token');
+
+    // Navigeer naar de orderspagina
+    router.push('/orders');
+  } else {
+    // Toon een foutmelding als de inloggegevens onjuist zijn
+    error.value = 'Onjuiste inloggegevens. Probeer het opnieuw.';
+  }
+}
+</script>
+
 <template>
   <div class="login">
     <h2>Admin Login</h2>
@@ -7,34 +32,6 @@
     <p v-if="error">{{ error }}</p>
   </div>
 </template>
-
-<script>
-export default {
-  data() {
-    return {
-      email: '',
-      password: '',
-      error: ''
-    };
-  },
-  methods: {
-login() {
-  // Controleer of de ingevoerde email en wachtwoord juist zijn
-  if (this.email === 'admin@admin.com' && this.password === 'Admin') {
-    // Sla een token op in localStorage (om aan te geven dat de gebruiker is ingelogd)
-    localStorage.setItem('token', 'admin-token');
-
-    // Navigeer naar de orderspagina
-    this.$router.push('/orders');
-  } else {
-    // Toon een foutmelding als de gegevens niet juist zijn
-    this.error = 'Onjuiste inloggegevens. Probeer het opnieuw.';
-  }
-}
-
-  }
-};
-</script>
 
 <style scoped>
 .login {
