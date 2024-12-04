@@ -1,51 +1,42 @@
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+
+const ordersData = [
+  { id: 1, customer: 'John Doe', email: 'john@example.com', status: 'Nieuwe bestelling', sneakerConfig: 'Kleur: Blauw, Maat: 42' },
+  { id: 2, customer: 'Jane Smith', email: 'jane@example.com', status: 'In productie', sneakerConfig: 'Kleur: Groen, Maat: 39' },
+  { id: 3, customer: 'Mark Johnson', email: 'mark@example.com', status: 'Verzonden', sneakerConfig: 'Kleur: Rood, Maat: 44' }
+];
+
+const route = useRoute();
+const order = ref(null);
+
+onMounted(() => {
+  const orderId = parseInt(route.params.id, 10);
+  order.value = ordersData.find(o => o.id === orderId);
+});
+</script>
+
 <template>
-  <div class="order-detail">
-    <h2>Bestelling Details</h2>
-    <p><strong>Klant:</strong> {{ order.customer.name }}</p>
-    <p><strong>Email:</strong> {{ order.customer.email }}</p>
-    <p><strong>Adres:</strong> {{ order.customer.address }}</p>
+  <div v-if="order" class="order-detail-container">
+    <h2>Details van Bestelling #{{ order.id }}</h2>
+    <p><strong>Klant:</strong> {{ order.customer }}</p>
+    <p><strong>Email:</strong> {{ order.email }}</p>
     <p><strong>Status:</strong> {{ order.status }}</p>
-    <p><strong>Configuratie:</strong></p>
-    <ul>
-      <li>Kleur: {{ order.sneakerConfig.color }}</li>
-      <li>Maat: {{ order.sneakerConfig.size }}</li>
-      <li>Extra's: {{ order.sneakerConfig.extras.join(', ') }}</li>
-    </ul>
+    <p><strong>Configuratie:</strong> {{ order.sneakerConfig }}</p>
+  </div>
+  <div v-else>
+    <p>Bestelling niet gevonden.</p>
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      order: null
-    };
-  },
-  async created() {
-    const orderId = this.$route.params.id;
-    try {
-      const response = await fetch(`https://your-backend-api.com/orders/${orderId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      this.order = await response.json();
-    } catch (error) {
-      console.error('Fout bij het ophalen van bestelling details:', error);
-    }
-  }
-};
-</script>
-
 <style scoped>
-.order-detail {
-  padding: 2em;
-}
-ul {
-  list-style: none;
-  padding: 0;
-}
-li {
-  margin-bottom: 5px;
+.order-detail-container {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: white;
 }
 </style>
