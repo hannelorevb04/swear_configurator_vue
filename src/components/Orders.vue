@@ -3,7 +3,7 @@
     <h2>Bestellingen Overzicht</h2>
     <ul class="orders-list">
       <li v-for="order in orders" :key="order._id" class="order-item">
-        <h3>Bestelling #{{ order._id }}</h3>
+        <h3 @click="goToOrderDetail(order._id)" style="cursor: pointer;">Bestelling #{{ order._id }}</h3>
         <p><strong>Email:</strong> {{ order.clientDetails.email }}</p>
         <p><strong>Status:</strong> {{ order.status }}</p>
         <div>
@@ -14,8 +14,14 @@
             <option value="Delivered">Delivered</option>
             <option value="Cancelled">Cancelled</option>
           </select>
-          <button @click="order.showDropdown ? handleStatusChange(order) : toggleStatusChange(order)">
-            {{ order.showDropdown ? 'Bevestig Statuswijziging' : 'Change Status' }}
+          <button v-if="order.showDropdown" @click="handleStatusChange(order)" style="margin-top: 10px;">
+            Bevestig Statuswijziging
+          </button>
+          <button v-else @click="toggleStatusChange(order)" style="margin-top: 10px;">
+            Change Status
+          </button>
+          <button @click="deleteOrder(order._id)" style="margin-top: 10px; margin-left: 10px;">
+            Verwijder Bestelling
           </button>
         </div>
         
@@ -54,12 +60,21 @@ const updateOrderStatus = async (orderId, newStatus) => {
   }
 };
 
+// Functie om een bestelling te verwijderen
+const deleteOrder = async (orderId) => {
+  try {
+    await axios.delete(`https://sneaker-configurator-api-ak6n.onrender.com/api/v1/orders/${orderId}`);
+    console.log(`Bestelling ${orderId} verwijderd`);
+    // Verwijder de bestelling lokaal uit de lijst
+    orders.value = orders.value.filter(order => order._id !== orderId);
+  } catch (error) {
+    console.error('Er is een fout opgetreden bij het verwijderen van de bestelling:', error);
+  }
+};
+
 // Functie om de dropdown voor statuswijziging te toggelen
 const toggleStatusChange = (order) => {
   order.showDropdown = !order.showDropdown;
-  if (!order.showDropdown) {
-    handleStatusChange(order);
-  }
 };
 
 // Functie om status te wijzigen
@@ -79,12 +94,20 @@ const handleStatusChange = (order) => {
 onMounted(() => {
   fetchOrders();
 });
+
+
+import { useRouter } from 'vue-router';
+
+// Declareer router
+const router = useRouter();
+
+// Functie om naar order detail te navigeren
+const goToOrderDetail = (orderId) => {
+  router.push({ path: `/orders/${orderId}` });
+};
 </script>
 
 <style scoped>
-* {
-  font-family: sans-serif;
-}
 .orders-container {
   padding: 2em;
   max-width: 800px;
@@ -118,6 +141,5 @@ button {
 
 button:hover {
   background-color: #64f243;
-  color: black
 }
 </style>

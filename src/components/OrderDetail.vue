@@ -9,7 +9,7 @@ const order = ref(null);
 onMounted(async () => {
   try {
     const orderId = route.params.id;
-    const response = await axios.get(`http://localhost:3000/api/v1/orders/${orderId}`);
+    const response = await axios.get(`https://sneaker-configurator-api-ak6n.onrender.com/api/v1/orders/${orderId}`);
     order.value = response.data.data.order;
   } catch (error) {
     console.error('Fout bij het ophalen van de bestelling:', error);
