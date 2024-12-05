@@ -1,10 +1,11 @@
 <template>
   <div class="orders-container">
-    <h2>Bestellingen Overzicht</h2>
+    <h2>Bestellingen</h2>
     <ul class="orders-list">
       <li v-for="order in orders" :key="order._id" class="order-item">
         <h3 @click="goToOrderDetail(order._id)" style="cursor: pointer;">Bestelling #{{ order._id }}</h3>
         <p><strong>Email:</strong> {{ order.clientDetails.email }}</p>
+        <p><strong>Totale prijs:</strong> € {{ order.totalPrice }}</p>
         <p><strong>Status:</strong> {{ order.status }}</p>
         <div>
           <select v-if="order.showDropdown" v-model="order.newStatus" style="margin-bottom: 10px; margin-right: 10px;">
@@ -15,17 +16,17 @@
             <option value="Cancelled">Cancelled</option>
           </select>
           <button v-if="order.showDropdown" @click="handleStatusChange(order)" style="margin-top: 10px;">
-            Bevestig Statuswijziging
+            Bevestig statuswijziging
           </button>
           <button v-else @click="toggleStatusChange(order)" style="margin-top: 10px;">
-            Change Status
+            Verander status
           </button>
           <button @click="deleteOrder(order._id)" style="margin-top: 10px; margin-left: 10px;">
-            Verwijder Bestelling
+            Verwijder bestelling
           </button>
         </div>
         
-        <p><strong>Totale prijs:</strong> {{ order.totalPrice }} EUR</p>
+        
       </li>
     </ul>
   </div>
@@ -108,6 +109,9 @@ const goToOrderDetail = (orderId) => {
 </script>
 
 <style scoped>
+* {
+  font-family: sans-serif;
+}
 .orders-container {
   padding: 2em;
   max-width: 800px;
@@ -132,14 +136,16 @@ button {
   margin-right: 10px;
   padding: 8px 12px;
   cursor: pointer;
-  background-color: #333;
-  color: #fff;
+
   border: none;
   border-radius: 4px;
   transition: background-color 0.3s ease;
+  background-color: #64f243;
+  color: black;
 }
 
 button:hover {
-  background-color: #64f243;
+  background-color: #333;
+  color: #fff;
 }
 </style>
