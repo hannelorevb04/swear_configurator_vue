@@ -1,29 +1,28 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-
-const ordersData = [
-  { id: 1, customer: 'John Doe', email: 'john@example.com', status: 'Nieuwe bestelling', sneakerConfig: 'Kleur: Blauw, Maat: 42' },
-  { id: 2, customer: 'Jane Smith', email: 'jane@example.com', status: 'In productie', sneakerConfig: 'Kleur: Groen, Maat: 39' },
-  { id: 3, customer: 'Mark Johnson', email: 'mark@example.com', status: 'Verzonden', sneakerConfig: 'Kleur: Rood, Maat: 44' }
-];
+import axios from 'axios';
 
 const route = useRoute();
 const order = ref(null);
 
-onMounted(() => {
-  const orderId = parseInt(route.params.id, 10);
-  order.value = ordersData.find(o => o.id === orderId);
+onMounted(async () => {
+  try {
+    const orderId = route.params.id;
+    const response = await axios.get(`http://localhost:3000/api/v1/orders/${orderId}`);
+    order.value = response.data.data.order;
+  } catch (error) {
+    console.error('Fout bij het ophalen van de bestelling:', error);
+  }
 });
 </script>
 
 <template>
   <div v-if="order" class="order-detail-container">
-    <h2>Details van Bestelling #{{ order.id }}</h2>
-    <p><strong>Klant:</strong> {{ order.customer }}</p>
-    <p><strong>Email:</strong> {{ order.email }}</p>
+    <h2>Details van Bestelling #{{ order._id }}</h2>
+    <p><strong>Klant:</strong> {{ order.clientDetails.email }}</p>
     <p><strong>Status:</strong> {{ order.status }}</p>
-    <p><strong>Configuratie:</strong> {{ order.sneakerConfig }}</p>
+    <p><strong>Orderdatum:</strong> {{ new Date(order.orderDate).toLocaleString() }}</p>
   </div>
   <div v-else>
     <p>Bestelling niet gevonden.</p>
