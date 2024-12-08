@@ -43,6 +43,15 @@ const deleteOrder = async () => {
   }
 };
 
+// Navigate to product details
+const goToProductDetails = (productId) => {
+  if (productId) {
+    router.push(`/products/${productId}`);
+  } else {
+    alert('Geen product ID gevonden.');
+  }
+};
+
 // Navigate back to orders
 const goBackToOrders = () => {
   router.push('/orders');
@@ -74,6 +83,7 @@ const goBackToOrders = () => {
 
     <div class="actions">
       <button @click="goBackToOrders">Terug naar orders</button>
+      <button @click="goToProductDetails(order.productId)">Bekijk product</button>
       <button @click="deleteOrder">Verwijder bestelling</button>
     </div>
   </div>

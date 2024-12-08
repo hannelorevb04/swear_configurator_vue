@@ -1,107 +1,95 @@
+<script setup>
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+
+const products = ref([]); // Reactieve array om producten op te slaan
+const error = ref(null); // Reactieve variabele om fouten op te slaan
+
+// Functie om producten op te halen
+const fetchProducts = async () => {
+  try {
+    const response = await axios.get('https://sneaker-configurator-api-ak6n.onrender.com/api/v1/products');
+    products.value = response.data.data.products; // Stel de producten in
+  } catch (err) {
+    console.error('Er is een fout opgetreden bij het ophalen van de producten:', err);
+    error.value = 'Kan de producten niet ophalen. Probeer het later opnieuw.';
+  }
+};
+
+// Ophalen van producten bij het laden van de component
+onMounted(() => {
+  fetchProducts();
+});
+</script>
+
 <template>
-  <div class="product-container">
-    <h1>All Products</h1>
-    <div v-if="loading" class="loading">Loading...</div>
-    <div v-else-if="error" class="error">{{ error }}</div>
-    <div v-else class="product-list">
-      <div v-for="product in products" :key="product._id" class="product-card">
-        <h2>{{ product.model }}</h2>
-        <p><strong>Price:</strong> €{{ product.startPrice }}</p>
-        <p><strong>Size:</strong> {{ product.size }}</p>
-        <div>
-          <strong>Colors:</strong>
-          <ul>
-            <li><strong>Sole:</strong> {{ product.colors.sole }}</li>
-            <li><strong>Laces:</strong> {{ product.colors.laces }}</li>
-            <li><strong>Outside 1:</strong> {{ product.colors.outside_1 }}</li>
-            <li><strong>Outside 2:</strong> {{ product.colors.outside_2 }}</li>
-          </ul>
-        </div>
-        <div>
-          <strong>Materials:</strong>
-          <ul>
-            <li><strong>Sole:</strong> {{ product.materials.sole }}</li>
-            <li><strong>Laces:</strong> {{ product.materials.laces }}</li>
-            <li><strong>Outside 1:</strong> {{ product.materials.outside_1 }}</li>
-            <li><strong>Outside 2:</strong> {{ product.materials.outside_2 }}</li>
-          </ul>
-        </div>
-      </div>
+  <div class="products-container">
+    <h2>Alle Producten</h2>
+
+    <!-- Fouten weergeven -->
+    <div v-if="error" class="error">{{ error }}</div>
+
+    <!-- Productenlijst -->
+    <div v-else>
+      <ul class="products-list">
+        <li v-for="product in products" :key="product._id" class="product-item">
+          <h3>Product #{{ product._id }}</h3>
+          <p><strong>Model:</strong> {{ product.model }}</p>
+          <p><strong>Basisprijs:</strong> € {{ product.startPrice }}</p>
+          <p><strong>Maat:</strong> {{ product.size }}</p>
+          <div>
+            <h4>Kleuren:</h4>
+            <ul>
+              <li><strong>Zool:</strong> {{ product.colors.sole }}</li>
+              <li><strong>Veters:</strong> {{ product.colors.laces }}</li>
+              <li><strong>Buitenkant 1:</strong> {{ product.colors.outside_1 }}</li>
+              <li><strong>Buitenkant 2:</strong> {{ product.colors.outside_2 }}</li>
+            </ul>
+          </div>
+          <div>
+            <h4>Materialen:</h4>
+            <ul>
+              <li><strong>Zool:</strong> {{ product.materials.sole }}</li>
+              <li><strong>Veters:</strong> {{ product.materials.laces }}</li>
+              <li><strong>Buitenkant 1:</strong> {{ product.materials.outside_1 }}</li>
+              <li><strong>Buitenkant 2:</strong> {{ product.materials.outside_2 }}</li>
+            </ul>
+          </div>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
 
-<script>
-export default {
-  name: "Product",
-  data() {
-    return {
-      products: [],
-      loading: true,
-      error: null,
-    };
-  },
-  methods: {
-    async fetchProducts() {
-      try {
-        const response = await fetch(
-          "https://sneaker-configurator-api-ak6n.onrender.com/api/v1/products"
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch products");
-        }
-        const data = await response.json();
-        this.products = data.data.products;
-      } catch (err) {
-        this.error = err.message;
-      } finally {
-        this.loading = false;
-      }
-    },
-  },
-  created() {
-    this.fetchProducts();
-  },
-};
-</script>
-
 <style scoped>
-.product-container {
+*{
+  font-family: sans-serif;
+}
+.products-container {
+  max-width: 800px;
+  margin: 0 auto;
   padding: 20px;
-  font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.loading {
-  text-align: center;
-  font-size: 18px;
-  color: #666;
+.products-list {
+  list-style: none;
+  padding: 0;
+}
+
+.product-item {
+  background: white;
+  padding: 20px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .error {
-  text-align: center;
-  font-size: 18px;
   color: red;
-}
-
-.product-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
-}
-
-.product-card {
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 16px;
-  background: #fff;
-}
-
-.product-card h2 {
-  margin-top: 0;
-}
-
-.product-card ul {
-  list-style-type: none;
-  padding: 0;
+  font-weight: bold;
+  margin-top: 20px;
 }
 </style>
