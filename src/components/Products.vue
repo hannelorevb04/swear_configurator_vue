@@ -2,21 +2,21 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
-const products = ref([]); // Reactieve array om producten op te slaan
-const error = ref(null); // Reactieve variabele om fouten op te slaan
+const products = ref([]); 
+const error = ref(null); 
 
-// Functie om producten op te halen
+
 const fetchProducts = async () => {
   try {
     const response = await axios.get('https://sneaker-configurator-api-ak6n.onrender.com/api/v1/products');
-    products.value = response.data.data.products; // Stel de producten in
+    products.value = response.data.data.products;
   } catch (err) {
     console.error('Er is een fout opgetreden bij het ophalen van de producten:', err);
     error.value = 'Kan de producten niet ophalen. Probeer het later opnieuw.';
   }
 };
 
-// Ophalen van producten bij het laden van de component
+
 onMounted(() => {
   fetchProducts();
 });
@@ -26,10 +26,10 @@ onMounted(() => {
   <div class="products-container">
     <h2>Alle Producten</h2>
 
-    <!-- Fouten weergeven -->
+    <!-- fouten weergeven -->
     <div v-if="error" class="error">{{ error }}</div>
 
-    <!-- Productenlijst -->
+    
     <div v-else>
       <ul class="products-list">
         <li v-for="product in products" :key="product._id" class="product-item">

@@ -1,37 +1,37 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import apiClient from '../api'; // Gebruik de aangepaste Axios-instantie
+import apiClient from '../api'; 
 import { useRouter } from 'vue-router';
 
-// Declaraties
+
 const orders = ref([]);
 const error = ref('');
 const router = useRouter();
-const showPasswordModal = ref(false); // Modal staat standaard uit
+const showPasswordModal = ref(false); 
 const oldPassword = ref('');
 const newPassword = ref('');
 const confirmPassword = ref('');
 const passwordError = ref('');
 const passwordSuccess = ref('');
-const isMenuOpen = ref(false); // Hamburger menu logica
+const isMenuOpen = ref(false); 
 
-// Toggle hamburger menu
+
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
 };
 
-// Toggle wachtwoord modal
+
 const togglePasswordModal = () => {
   showPasswordModal.value = !showPasswordModal.value;
 };
 
-// Uitloggen actie
+
 const logout = () => {
   console.log("Uitloggen...");
-  router.push('/'); // Navigeer naar login.vue
+  router.push('/'); //home
 };
 
-// Functie om bestellingen op te halen
+
 const fetchOrders = async () => {
   try {
     const response = await apiClient.get('/orders');
@@ -46,7 +46,6 @@ const fetchOrders = async () => {
   }
 };
 
-// Functie om de status van een bestelling bij te werken
 const updateOrderStatus = async (orderId, newStatus) => {
   try {
     await apiClient.put(`/orders/${orderId}`, { status: newStatus });
@@ -56,7 +55,7 @@ const updateOrderStatus = async (orderId, newStatus) => {
   }
 };
 
-// Functie om wachtwoord te wijzigen
+
 const updatePassword = async () => {
   try {
     if (newPassword.value !== confirmPassword.value) {
@@ -75,14 +74,14 @@ const updatePassword = async () => {
     oldPassword.value = '';
     newPassword.value = '';
     confirmPassword.value = '';
-    showPasswordModal.value = false; // Sluit de modal
+    showPasswordModal.value = false; 
   } catch (err) {
     passwordError.value = err.response?.data?.message || 'Er is een fout opgetreden.';
     passwordSuccess.value = '';
   }
 };
 
-// Haal de bestellingen op bij het laden van de component
+
 onMounted(() => {
   fetchOrders();
 });
@@ -133,7 +132,7 @@ onMounted(() => {
     </ul>
   </div>
 
-  <!-- Modal -->
+  <!-- Ww wijzigen -->
   <div v-if="showPasswordModal" class="modal">
     <div class="modal-content">
       <h3>Wachtwoord wijzigen</h3>
@@ -172,7 +171,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-/* Algemene stijlen */
+
 * {
   font-family: sans-serif;
 }
@@ -213,7 +212,7 @@ button:hover {
   color: #fff;
 }
 
-/* Navigatie stijlen */
+
 nav {
   display: flex;
   justify-content: space-between;
@@ -228,7 +227,7 @@ nav {
 }
 
 nav + .orders-container {
-  padding-top: 100px; /* Padding onder navigatie */
+  padding-top: 100px; 
 }
 
 #logo img {

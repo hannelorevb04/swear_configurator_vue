@@ -15,11 +15,11 @@ async function login() {
       password: password.value,
     });
 
-    // Sla het token op in localStorage
+   
     const token = response.data.data.token;
     localStorage.setItem('token', token);
 
-    // Redirect naar de bestellingenpagina
+    
     router.push('/orders');
   } catch (err) {
     console.error('Inloggen mislukt:', err);

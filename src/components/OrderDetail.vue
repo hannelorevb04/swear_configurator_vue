@@ -8,26 +8,26 @@ const router = useRouter();
 const order = ref(null);
 const newStatus = ref('');
 
-// Fetch order details
+
 onMounted(async () => {
   try {
-    const token = localStorage.getItem('token'); // Retrieve token
-    const orderId = route.params.id; // Get order ID from route
+    const token = localStorage.getItem('token'); 
+    const orderId = route.params.id;
     const response = await axios.get(
       `https://sneaker-configurator-api-ak6n.onrender.com/api/v1/orders/${orderId}`,
       {
         headers: {
-          Authorization: `Bearer ${token}`, // Include token in the headers
+          Authorization: `Bearer ${token}`, 
         },
       }
     );
-    order.value = response.data.data.order; // Store the fetched order
+    order.value = response.data.data.order;
     newStatus.value = order.value.status;
   } catch (error) {
     console.error('Fout bij het ophalen van de bestelling:', error);
     if (error.response?.status === 401) {
       alert('U bent niet geautoriseerd. Log opnieuw in.');
-      router.push('/login'); // Redirect to login
+      router.push('/login'); 
     }
   }
 });
@@ -43,7 +43,7 @@ const deleteOrder = async () => {
   }
 };
 
-// Navigate to product details
+
 const goToProductDetails = (productId) => {
   if (productId) {
     router.push(`/products/${productId}`);
@@ -52,7 +52,7 @@ const goToProductDetails = (productId) => {
   }
 };
 
-// Navigate back to orders
+
 const goBackToOrders = () => {
   router.push('/orders');
 };

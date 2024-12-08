@@ -10,7 +10,7 @@ onMounted(async () => {
   const productId = route.params.id;
   try {
     const response = await axios.get(`https://sneaker-configurator-api-ak6n.onrender.com/api/v1/products/${productId}`);
-    product.value = response.data.data.product; // Zorg dat de API de juiste structuur retourneert
+    product.value = response.data.data.product; 
   } catch (error) {
     console.error('Fout bij het ophalen van het product:', error);
   }
