@@ -1,21 +1,37 @@
+
+
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import axios from 'axios';
 
 const email = ref('');
 const password = ref('');
 const error = ref('');
 const router = useRouter();
 
-function login() {
-  if (email.value === 'admin@admin.com' && password.value === 'Admin') {
-    localStorage.setItem('token', 'admin-token');
+async function login() {
+  try {
+    const response = await axios.post('https://sneaker-configurator-api-ak6n.onrender.com/api/v1/users/login', {
+      email: email.value,
+      password: password.value,
+    });
+
+    // Sla het token op in localStorage
+    const token = response.data.data.token;
+    localStorage.setItem('token', token);
+
+    // Redirect naar de bestellingenpagina
     router.push('/orders');
-  } else {
-    error.value = 'Onjuiste inloggegevens. Probeer het opnieuw.';
+  } catch (err) {
+    console.error('Inloggen mislukt:', err);
+    error.value = 'Inloggen mislukt. Controleer je gegevens.';
   }
 }
+
+
 </script>
+
 
 <template>
   <div class="login-container">
