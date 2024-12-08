@@ -1,4 +1,4 @@
-<script setup>
+<script setup> 
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
@@ -7,7 +7,6 @@ const route = useRoute();
 const router = useRouter();
 const order = ref(null);
 const newStatus = ref('');
-
 
 // Fetch order details
 onMounted(async () => {
@@ -33,7 +32,6 @@ onMounted(async () => {
   }
 });
 
-
 // Delete order
 const deleteOrder = async () => {
   try {
@@ -43,6 +41,11 @@ const deleteOrder = async () => {
   } catch (error) {
     console.error('Er is een fout opgetreden bij het verwijderen van de bestelling:', error);
   }
+};
+
+// Navigate back to orders
+const goBackToOrders = () => {
+  router.push('/orders');
 };
 </script>
 
@@ -64,29 +67,23 @@ const deleteOrder = async () => {
       {{ order.clientDetails.address.city }},
       {{ order.clientDetails.address.zip }}, 
       {{ order.clientDetails.address.country }}</p>
-      <p><strong>Totale prijs:</strong> € {{ order.totalPrice }}</p>
+    <p><strong>Totale prijs:</strong> € {{ order.totalPrice }}</p>
     <p><strong>Email:</strong> {{ order.clientDetails.email }}</p>
     <p><strong>Telefoonnummer:</strong> {{ order.clientDetails.phone }}</p>
-    
-          <p><strong>Status:</strong> {{ order.status }}</p>
-        
-        <div class="order-actions">
-          <select v-if="order.showDropdown" v-model="order.newStatus">
-            <option disabled value="">-- Selecteer een status --</option>
-            <option value="Pending">Pending</option>
-            <option value="Shipped">Shipped</option>
-            <option value="Delivered">Delivered</option>
-            <option value="Cancelled">Cancelled</option>
-          </select>
-        </div>
-        </div>
+    <p><strong>Status:</strong> {{ order.status }}</p>
+
+    <div class="actions">
+      <button @click="goBackToOrders">Terug naar orders</button>
+      <button @click="deleteOrder">Verwijder bestelling</button>
+    </div>
+  </div>
   <div v-else>
     <p>Bestelling niet gevonden.</p>
   </div>
 </template>
 
 <style scoped>
-*{
+* {
   font-family: sans-serif;
 }
 .order-detail-container {
@@ -107,12 +104,12 @@ button {
   color: black;
 }
 button:hover {
-    background-color: #333;
+  background-color: #333;
   color: #fff;
 }
-.status-select {
-  margin-left: 10px;
-  margin-right: 15px;
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
 }
-
 </style>
