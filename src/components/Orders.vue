@@ -110,6 +110,7 @@ const goToOrderDetail = (orderId) => {
 
 -->
 
+
 <script setup>
 import { ref, onMounted } from 'vue';
 import apiClient from '../api'; // Gebruik de aangepaste Axios-instantie
@@ -119,6 +120,12 @@ import { useRouter } from 'vue-router';
 const orders = ref([]);
 const error = ref('');
 const router = useRouter();
+const showPasswordModal = ref(false); // Modal staat standaard uit
+const oldPassword = ref('');
+const newPassword = ref('');
+const confirmPassword = ref('');
+const passwordError = ref('');
+const passwordSuccess = ref('');
 
 // Functie om bestellingen op te halen
 const fetchOrders = async () => {
@@ -180,6 +187,32 @@ const goToOrderDetail = (orderId) => {
   router.push({ path: `/orders/${orderId}` });
 };
 
+// Functie om wachtwoord te wijzigen
+const updatePassword = async () => {
+  try {
+    if (newPassword.value !== confirmPassword.value) {
+      passwordError.value = 'Nieuwe wachtwoorden komen niet overeen.';
+      passwordSuccess.value = '';
+      return;
+    }
+
+    await apiClient.put('/users/update-password', {
+      oldPassword: oldPassword.value,
+      newPassword: newPassword.value,
+    });
+
+    passwordSuccess.value = 'Wachtwoord succesvol gewijzigd.';
+    passwordError.value = '';
+    oldPassword.value = '';
+    newPassword.value = '';
+    confirmPassword.value = '';
+    showPasswordModal.value = false; // Sluit de modal
+  } catch (err) {
+    passwordError.value = err.response?.data?.message || 'Er is een fout opgetreden.';
+    passwordSuccess.value = '';
+  }
+};
+
 // Haal de bestellingen op bij het laden van de component
 onMounted(() => {
   fetchOrders();
@@ -188,42 +221,79 @@ onMounted(() => {
 
 <template>
   <div class="orders-container">
-    <h2>Bestellingen</h2>
+    <div class="header">
+      <h2>Bestellingen</h2>
+      <button class="password-button" @click="showPasswordModal = true">Wachtwoord wijzigen</button>
+    </div>
+
     <div v-if="error" class="error">{{ error }}</div>
     <ul class="orders-list" v-else>
       <li v-for="order in orders" :key="order._id" class="order-item">
-        <h3 @click="goToOrderDetail(order._id)" style="cursor: pointer;">Bestelling #{{ order._id }}</h3>
-        <p><strong>Email:</strong> {{ order.clientDetails.email }}</p>
-        <p><strong>Totale prijs:</strong> € {{ order.totalPrice }}</p>
-        <p><strong>Status:</strong> {{ order.status }}</p>
-        <div>
-          <select v-if="order.showDropdown" v-model="order.newStatus" style="margin-bottom: 10px; margin-right: 10px;">
+        <div class="order-info">
+          <h3 @click="goToOrderDetail(order._id)" style="cursor: pointer;">Bestelling #{{ order._id }}</h3>
+          <p><strong>Email:</strong> {{ order.clientDetails.email }}</p>
+          <p><strong>Totale prijs:</strong> € {{ order.totalPrice }}</p>
+          <p><strong>Status:</strong> {{ order.status }}</p>
+        </div>
+        <div class="order-actions">
+          <select v-if="order.showDropdown" v-model="order.newStatus">
             <option disabled value="">-- Selecteer een status --</option>
             <option value="Pending">Pending</option>
             <option value="Shipped">Shipped</option>
             <option value="Delivered">Delivered</option>
             <option value="Cancelled">Cancelled</option>
           </select>
-          <button v-if="order.showDropdown" @click="handleStatusChange(order)" style="margin-top: 10px;">
-            Bevestig statuswijziging
-          </button>
-          <button v-else @click="toggleStatusChange(order)" style="margin-top: 10px;">
-            Verander status
-          </button>
-          <button @click="deleteOrder(order._id)" style="margin-top: 10px; margin-left: 10px;">
-            Verwijder bestelling
-          </button>
+          <button v-if="order.showDropdown" @click="handleStatusChange(order)">Bevestig statuswijziging</button>
+          <button v-else @click="toggleStatusChange(order)">Verander status</button>
+          <button @click="deleteOrder(order._id)">Verwijder bestelling</button>
         </div>
       </li>
     </ul>
+
+    <!-- Wachtwoord wijzigen modal -->
+    <div v-if="showPasswordModal" class="modal">
+      <div class="modal-content">
+        <h3>Wachtwoord wijzigen</h3>
+        <form @submit.prevent="updatePassword">
+          <label for="old-password">Huidig wachtwoord</label>
+          <input
+            id="old-password"
+            type="password"
+            v-model="oldPassword"
+            placeholder="Voer je huidige wachtwoord in"
+            required
+          />
+          <label for="new-password">Nieuw wachtwoord</label>
+          <input
+            id="new-password"
+            type="password"
+            v-model="newPassword"
+            placeholder="Voer een nieuw wachtwoord in"
+            required
+          />
+          <label for="confirm-password">Bevestig nieuw wachtwoord</label>
+          <input
+            id="confirm-password"
+            type="password"
+            v-model="confirmPassword"
+            placeholder="Bevestig je nieuwe wachtwoord"
+            required
+          />
+          <button type="submit">Bijwerken</button>
+          <button type="button" @click="showPasswordModal = false">Annuleren</button>
+        </form>
+        <p v-if="passwordError" class="error">{{ passwordError }}</p>
+        <p v-if="passwordSuccess" class="success">{{ passwordSuccess }}</p>
+      </div>
+    </div>
   </div>
 </template>
 
+
+
 <style scoped>
-.error {
-  color: red;
-  font-weight: bold;
-  margin-bottom: 20px;
+* {
+  font-family: sans-serif;
 }
 .orders-container {
   padding: 2em;
@@ -249,6 +319,7 @@ button {
   margin-right: 10px;
   padding: 8px 12px;
   cursor: pointer;
+
   border: none;
   border-radius: 4px;
   transition: background-color 0.3s ease;
@@ -260,5 +331,36 @@ button:hover {
   background-color: #333;
   color: #fff;
 }
-</style>
 
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 400px;
+  width: 100%;
+}
+
+.success {
+  color: green;
+  margin-top: 10px;
+}
+
+.error {
+  color: red;
+  margin-top: 10px;
+}
+
+</style>
