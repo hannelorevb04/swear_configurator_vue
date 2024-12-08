@@ -4,12 +4,14 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Login from './components/Login.vue';
 import Orders from './components/Orders.vue';
 import OrderDetail from './components/OrderDetail.vue';
+import Products from './components/Products.vue';
 
 // Stel de routes in
 const routes = [
   { path: '/', component: Login },
   { path: '/orders', component: Orders },
-  { path: '/orders/:id', component: OrderDetail }
+  { path: '/orders/:id', component: OrderDetail },
+  { path: '/products', component: Products } // Voeg een nieuwe route toe voor het product detail
 ];
 
 // Maak de router aan
