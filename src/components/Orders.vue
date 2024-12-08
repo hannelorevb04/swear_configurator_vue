@@ -241,14 +241,14 @@ onMounted(() => {
               }) }}
             </p>
           <p>
-            <strong>Adres:</strong>
+            <strong>Address:</strong>
             {{ order.clientDetails.address.street }}, 
             {{ order.clientDetails.address.city }}, 
             {{ order.clientDetails.address.zip }}, 
             {{ order.clientDetails.address.country }}
           </p>
           <p><strong>Status:</strong> {{ order.status }}</p>
-        </div>
+        
         <div class="order-actions">
           <select v-if="order.showDropdown" v-model="order.newStatus">
             <option disabled value="">-- Selecteer een status --</option>
@@ -260,6 +260,7 @@ onMounted(() => {
           <button v-if="order.showDropdown" @click="handleStatusChange(order)">Bevestig statuswijziging</button>
           <button v-else @click="toggleStatusChange(order)">Verander status</button>
           <button @click="deleteOrder(order._id)">Verwijder bestelling</button>
+        </div>
         </div>
       </li>
     </ul>
