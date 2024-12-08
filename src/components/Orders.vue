@@ -231,8 +231,22 @@ onMounted(() => {
       <li v-for="order in orders" :key="order._id" class="order-item">
         <div class="order-info">
           <h3 @click="goToOrderDetail(order._id)" style="cursor: pointer;">Bestelling #{{ order._id }}</h3>
-          <p><strong>Email:</strong> {{ order.clientDetails.email }}</p>
-          <p><strong>Totale prijs:</strong> € {{ order.totalPrice }}</p>
+          <p><strong>Besteldatum:</strong>
+              {{ new Date(order.orderDate).toLocaleString('nl-NL', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+              }) }}
+            </p>
+          <p>
+            <strong>Adres:</strong>
+            {{ order.clientDetails.address.street }}, 
+            {{ order.clientDetails.address.city }}, 
+            {{ order.clientDetails.address.zip }}, 
+            {{ order.clientDetails.address.country }}
+          </p>
           <p><strong>Status:</strong> {{ order.status }}</p>
         </div>
         <div class="order-actions">
